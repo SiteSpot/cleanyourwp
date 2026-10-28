@@ -13,7 +13,8 @@ You are either running the refresh on someone's site (follow `PROMPT.md`) or con
 7. **Stop conditions.** Multisite, a store with recent orders, a blocked WP-CLI, an unidentified plugin, an unexpected PHP error, a failed restore: stop and ask.
 8. **One site, one change, one verification.** Then the next.
 9. **Write the change log.** `tools/log.sh "<what>" "<rollback>"` after every change, before moving on.
-10. **Crawl gently.** One request at a time with a pause between, on production. Stop if TTFB climbs.
+10. **Watch afterwards.** After the last change on a site, check it every 30 minutes for 24 hours (Phase 8). Read-only; a rollback needs a GO unless the owner pre-approved it in the quiz.
+11. **Crawl gently.** One request at a time with a pause between, on production. Stop if TTFB climbs.
 
 ## Contributing to this repo
 

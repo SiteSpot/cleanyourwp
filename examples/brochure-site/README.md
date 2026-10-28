@@ -85,7 +85,11 @@ Evidence: `wp --info`, `wp core version`, Site Health > Info > Server.
 9. **Database cleanup:** 1,840 revisions, 212 spam comments, expired transients. Batched. 15 min.
 10. **Hybrid static: separate project.** Scope above.
 
-## Phase 8: Report (after items 1–9)
+## Phase 8: Monitoring (24 hours after item 9)
+
+48 checks, every 30 minutes. One finding: at 03:10 the PHP error log showed a deprecation notice from the old theme's `functions.php` under PHP 8.4, repeated by the nightly cron. Pages, forms and wp-admin were unaffected, so no rollback; it went into the report as a follow-up. TTFB stayed within 60 ms of the post-change measurement, and there were no new web server errors.
+
+## Phase 9: Report (after items 1–9)
 
 | Metric | Before | After |
 | --- | --- | --- |

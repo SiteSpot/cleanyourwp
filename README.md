@@ -29,9 +29,10 @@ Most WordPress sites that have been around a few years carry three plugins doing
 | **5. Quiz** | Multiple-choice questions on the calls only you can make. | No |
 | **6. Plan** | A numbered plan. You approve items with `GO 3`. | No |
 | **7. Change** | Full backup, test restore, then one item at a time: pre-flight, second `GO`, targeted backup, change, clear caches, verify, log. | Only what you approved |
-| **8. Report** | Before and after: plugin count, PHP, TTFB, score, what was closed, what was deferred, a quarterly checklist. | No |
+| **8. Monitor** | Every 30 minutes for 24 hours: pages, wp-admin, error logs, cron, cache headers, disk, HTTPS. Alerts you and proposes a rollback if anything breaks. | Only a rollback |
+| **9. Report** | Before and after: plugin count, PHP, TTFB, score, what was closed, what was deferred, a quarterly checklist. | No |
 
-**Read-only until Phase 7. Numbered approvals. Verified backups. A dated change log on the server. ASK is always an acceptable answer.**
+**Read-only until Phase 7. Numbered approvals. Verified backups. 24 hours of monitoring afterwards. A dated change log on the server. ASK is always an acceptable answer.**
 
 ## Quick start
 

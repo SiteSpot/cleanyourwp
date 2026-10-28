@@ -14,7 +14,7 @@ My sites: `[fill in: domain, how you can reach it (SSH host + path, REST URL + a
 
 ## Ground rules
 
-1. Phases 0 to 6 are read-only. In those phases you may run commands that read, list, query, crawl or measure. You may not run anything that writes, installs, updates, deletes, deactivates, or changes a setting. That includes "harmless" writes like clearing a cache or flushing rewrite rules.
+1. Phases 0 to 6 are read-only, and so is Phase 8 apart from a rollback. In those phases you may run commands that read, list, query, crawl or measure. You may not run anything that writes, installs, updates, deletes, deactivates, or changes a setting. That includes "harmless" writes like clearing a cache or flushing rewrite rules.
 2. Nothing changes in Phase 7 until I approve a specific item by number. See the approval protocol below.
 3. One site at a time. One change at a time. Verify each change before starting the next.
 4. No full backup, no changes. See the backup protocol below.
@@ -111,7 +111,7 @@ Fetch the homepage and two inner pages twice each, then once with a cache-bustin
 
 **Performance and database**
 
-- Baseline measurements before anything changes: TTFB and Core Web Vitals (LCP, INP, CLS) for the homepage and two important inner pages, from a field source if available (CrUX) and a lab run otherwise. Keep these for the Phase 8 report.
+- Baseline measurements before anything changes: TTFB and Core Web Vitals (LCP, INP, CLS) for the homepage and two important inner pages, from a field source if available (CrUX) and a lab run otherwise. Keep these for monitoring in Phase 8 and the Phase 9 report.
 - Autoloaded options size and the ten largest autoloaded options.
 - WP-Cron health: whether it runs on page load or via a real cron, overdue jobs, and jobs scheduled by plugins no longer installed.
 - The ten largest tables, and tables left behind by plugins that are no longer installed.
@@ -227,6 +227,7 @@ Start with the whole site:
 5. What's the future of the theme or page builder? A) Keep it. B) Move gradually to blocks. C) Rebuild later. D) Doesn't matter if we go static.
 6. Do you want AI agents to be able to work with this site? A) Yes, read and write. B) Read only. C) Not yet. D) Never.
 7. Is there a maintenance window I should use for risky changes like the PHP upgrade? A) Any time. B) Nights. C) Weekends. D) I'll tell you each time.
+8. During the 24-hour monitoring after the changes, if the site goes down and you can't reach me: A) Roll back the most recent change, then tell me. B) Alert me and wait for my GO.
 
 Then quiz me only on the ASK items and the borderline calls. Give me the evidence first, then the options. For example:
 
@@ -293,9 +294,34 @@ Hard-won lessons to respect:
 - **Going static.** Keep WordPress running behind a login until the static export has served real traffic for at least a week. Keep the dynamic site's DNS record ready to switch back.
 - **Crawling.** Don't hammer production. Crawl slowly and one site at a time.
 
-## Phase 8: Report
+## Phase 8: Monitor for 24 hours
 
-When we're done, give me a before-and-after summary for each site:
+Problems from a cleanup often show up hours later: a cron job that fails overnight, a cache that expires, a PHP pool that runs out of memory under load. After the last approved change on a site, watch it every 30 minutes for 24 hours. If another change is made during that window, restart the 24 hours.
+
+Use your own scheduling to run the checks: a recurring task or loop if your assistant has one (in Claude Code, `/loop 30m`). If it can't run on a schedule, tell me so before Phase 7 ends, so I can keep the session open or check by hand. Don't install a cron job or monitoring plugin on the server for this unless it's an approved plan item.
+
+Every check is read-only and light: one request per page, no form submissions, no orders. Each run, check:
+
+- **Pages.** The homepage, the key pages from Phase 1 and the page behind the critical flow from Phase 5. Each must return 200 with its normal title and content, no PHP warnings or "critical error" text in the HTML, and TTFB within reason of the Phase 1 baseline.
+- **wp-admin.** The login page returns 200.
+- **Logs.** New lines since the last check in the PHP error log, the web server error log and `debug.log` if logging is on. Report anything new, with the lines.
+- **Cron.** `wp cron event list`: overdue jobs, and anything that should have run in the last 30 minutes but didn't.
+- **Caching.** Cache headers on the homepage still show the expected layer, and hits where there were hits before.
+- **Server.** Free disk space (`df -h`), since backups take room. Anything else the host shows you cheaply, such as load or PHP-FPM status.
+- **HTTPS.** The certificate is still valid and not about to expire.
+- **Email**, if a change touched it: delivery logs show mail still going out.
+
+Keep each run's results in your working notes, not on the server. After each run, give me one line: all clear, or what changed. If something is wrong:
+
+- Tell me straight away, with the evidence and which change most likely caused it.
+- Propose the rollback from that item's plan entry and wait for my `GO`.
+- Only roll back without asking if I chose that in the Phase 5 quiz and the site is actually down or erroring on the critical flow. Then roll back the most recent change only, verify, log it with `tools/log.sh`, and tell me.
+
+At the end of the 24 hours, summarise: number of checks, anything found and what was done, and TTFB and error counts compared to the baseline. Log the summary with `tools/log.sh`.
+
+## Phase 9: Report
+
+When monitoring is done, give me a before-and-after summary for each site:
 
 - Plugin count, PHP version, TTFB, Core Web Vitals, page weight and database size, before and after.
 - The Phase 4 score before and after, row by row.
