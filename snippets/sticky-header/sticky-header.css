@@ -1,0 +1,10 @@
+/* CleanYourWP snippet: sticky header. Change .site-header to your theme's header selector. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #fff; /* match your header's background so content doesn't show through */
+}
+/* Optional: if the WordPress admin bar is shown, keep the header below it. */
+body.admin-bar .site-header { top: 32px; }
+@media (max-width: 782px) { body.admin-bar .site-header { top: 46px; } }

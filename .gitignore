@@ -1,0 +1,10 @@
+# Audit output you may keep locally but shouldn't commit
+*.audit.md
+audit.md
+usage.md
+cache.md
+static.md.local
+# Backups never belong in the repo
+backups/
+cleanyourwp-backups/
+.DS_Store
